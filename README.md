@@ -1,4 +1,4 @@
-# ROS 2 TurtleBot3 Maze
+# ROS2 TurtleBot3 Maze
 
 基于 ROS 2 Humble、Gazebo Classic 和 TurtleBot3 Burger 的迷宫机器人综合实践项目。
 项目完成了机器人仿真环境搭建、激光雷达数据处理、运动控制、左墙跟随和 Pure-Pursuit 航迹跟踪，并提供多张 Gazebo 迷宫地图用于测试。
