@@ -41,7 +41,6 @@ sudo apt update
 sudo apt install -y \
   python3-colcon-common-extensions \
   python3-numpy \
-  python3-rosdep \
   ros-humble-gazebo-ros-pkgs \
   ros-humble-robot-state-publisher \
   ros-humble-rqt-graph \
@@ -55,13 +54,6 @@ sudo apt install -y \
 ```bash
 ros2 pkg prefix turtlebot3_description
 ros2 pkg prefix turtlebot3_gazebo
-```
-
-首次使用 `rosdep` 时进行初始化；如果系统已经初始化，可跳过 `rosdep init`：
-
-```bash
-sudo rosdep init
-rosdep update
 ```
 
 ## 获取代码
@@ -93,7 +85,6 @@ cd ~/ros2maze_ws
 ```bash
 cd ~/ros2maze_ws
 source /opt/ros/humble/setup.bash
-rosdep install --from-paths src --ignore-src -r -y
 colcon build --symlink-install
 source install/setup.bash
 ```
@@ -163,16 +154,6 @@ ros2 run maze_control tb3_waypoints
 
 # Pure-Pursuit 航迹跟踪
 ros2 run maze_control tb3_pure_pursuit
-```
-
-优化左墙跟随节点可以在独立运行时通过 ROS 2 参数调整目标墙距、避障距离和速度：
-
-```bash
-ros2 run maze_control tb3_wall_follower_optimized --ros-args \
-  -p target_left:=0.45 \
-  -p front_danger:=0.45 \
-  -p max_linear:=0.22 \
-  -p max_angular:=0.70
 ```
 
 ## 主要话题
