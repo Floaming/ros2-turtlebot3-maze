@@ -23,6 +23,7 @@
 
 - Ubuntu 22.04
 - ROS 2 Humble
+- Python 3.10
 - Gazebo Classic 11
 - TurtleBot3 ROS 2 软件包
 
