@@ -1,0 +1,124 @@
+<?xml version="1.0" ?>
+<sdf version="1.6">
+  <world name="maze_world">
+
+    <include>
+      <uri>model://sun</uri>
+    </include>
+
+    <include>
+      <uri>model://ground_plane</uri>
+    </include>
+
+    <!-- 外框：底墙，右侧留出出口 -->
+    <model name="wall_bottom_left">
+      <static>true</static>
+      <pose>-0.375 -3.75 0.1 0 0 0</pose>
+      <link name="link">
+        <collision name="collision">
+          <geometry>
+            <box>
+              <size>5.25 0.15 0.2</size>
+            </box>
+          </geometry>
+        </collision>
+        <visual name="visual">
+          <geometry>
+            <box>
+              <size>5.25 0.15 0.2</size>
+            </box>
+          </geometry>
+        </visual>
+      </link>
+    </model>
+
+    <!-- 外框：顶墙 -->
+    <model name="wall_top">
+      <static>true</static>
+      <pose>0 3.75 0.1 0 0 0</pose>
+      <link name="link">
+        <collision name="collision">
+          <geometry>
+            <box>
+              <size>7.5 0.15 0.2</size>
+            </box>
+          </geometry>
+        </collision>
+        <visual name="visual">
+          <geometry>
+            <box>
+              <size>7.5 0.15 0.2</size>
+            </box>
+          </geometry>
+        </visual>
+      </link>
+    </model>
+
+    <!-- 外框：左墙，上段，下部为入口 -->
+    <model name="wall_left_top">
+      <static>true</static>
+      <pose>-3.75 0.75 0.1 0 0 0</pose>
+      <link name="link">
+        <collision name="collision">
+          <geometry>
+            <box>
+              <size>0.15 6 0.2</size>
+            </box>
+          </geometry>
+        </collision>
+        <visual name="visual">
+          <geometry>
+            <box>
+              <size>0.15 6 0.2</size>
+            </box>
+          </geometry>
+        </visual>
+      </link>
+    </model>
+
+    <!-- 外框：右墙，上段，下部为出口 -->
+    <model name="wall_right_top">
+      <static>true</static>
+      <pose>3.75 0.75 0.1 0 0 0</pose>
+      <link name="link">
+        <collision name="collision">
+          <geometry>
+            <box>
+              <size>0.15 6 0.2</size>
+            </box>
+          </geometry>
+        </collision>
+        <visual name="visual">
+          <geometry>
+            <box>
+              <size>0.15 6 0.2</size>
+            </box>
+          </geometry>
+        </visual>
+      </link>
+    </model>
+
+    <!-- 内墙：底部走廊的北墙 -->
+    <model name="wall_inner1">
+      <static>true</static>
+      <pose>0 -2.25 0.1 0 0 0</pose>
+      <link name="link">
+        <collision name="collision">
+          <geometry>
+            <box>
+              <size>7.5 0.15 0.2</size>
+            </box>
+          </geometry>
+        </collision>
+        <visual name="visual">
+          <geometry>
+            <box>
+              <size>7.5 0.15 0.2</size>
+            </box>
+          </geometry>
+        </visual>
+      </link>
+    </model>
+
+  </world>
+</sdf>
