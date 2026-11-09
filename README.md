@@ -3,7 +3,11 @@
 基于 ROS 2 Humble、Gazebo Classic 和 TurtleBot3 Burger 的迷宫机器人综合实践项目。
 项目完成了机器人仿真环境搭建、激光雷达数据处理、运动控制、左墙跟随和 Pure-Pursuit 航迹跟踪，并提供多张 Gazebo 迷宫地图用于测试。
 
-课程代码：`(2026-2027-1)-S0610350-04`
+## 项目信息
+
+- 课程名称：机器人感知与控制综合实践
+- 课程代码：`(2026-2027-1)-S0610350-04`
+- 参考资料：[机器人感知与控制综合实践-2026](https://www.yuque.com/shellcore/rpide7)
 
 ## 功能
 
@@ -22,11 +26,42 @@
 - Gazebo Classic 11
 - TurtleBot3 ROS 2 软件包
 
-安装 TurtleBot3 相关软件包后，确认系统中存在以下资源：
+## 安装依赖
+
+本项目假定 Ubuntu 22.04 和 ROS 2 Humble 已经安装完成。首先加载 ROS 2 环境：
+
+```bash
+source /opt/ros/humble/setup.bash
+```
+
+安装编译工具、Gazebo、TurtleBot3、RViz2、rqt_graph 和 NumPy：
+
+```bash
+sudo apt update
+sudo apt install -y \
+  python3-colcon-common-extensions \
+  python3-numpy \
+  python3-rosdep \
+  ros-humble-gazebo-ros-pkgs \
+  ros-humble-robot-state-publisher \
+  ros-humble-rqt-graph \
+  ros-humble-rviz2 \
+  ros-humble-turtlebot3-description \
+  ros-humble-turtlebot3-gazebo
+```
+
+确认系统中存在 TurtleBot3 模型资源：
 
 ```bash
 ros2 pkg prefix turtlebot3_description
 ros2 pkg prefix turtlebot3_gazebo
+```
+
+首次使用 `rosdep` 时进行初始化；如果系统已经初始化，可跳过 `rosdep init`：
+
+```bash
+sudo rosdep init
+rosdep update
 ```
 
 ## 获取代码
@@ -58,6 +93,7 @@ cd ~/ros2maze_ws
 ```bash
 cd ~/ros2maze_ws
 source /opt/ros/humble/setup.bash
+rosdep install --from-paths src --ignore-src -r -y
 colcon build --symlink-install
 source install/setup.bash
 ```
@@ -73,6 +109,12 @@ ros2 launch maze_control maze_tb3.launch.py
 ```
 
 当前 launch 默认加载 `test_corridor.world`，机器人默认出生位置为 `(0.75, 0.75)`，并默认启动优化左墙跟随节点。
+
+如需只启动 Gazebo、机器人和 RViz2，不自动运行控制算法：
+
+```bash
+ros2 launch maze_control maze_tb3.launch.py run_controller:=false
+```
 
 ## 切换地图
 
@@ -97,6 +139,42 @@ ros2 launch maze_control maze_tb3.launch.py
 | `tb3_wall_follower` | 基础左墙跟随 |
 | `tb3_wall_follower_optimized` | 优化左墙跟随 |
 
+点到点控制、航点跟踪和 Pure-Pursuit 使用预设目标坐标，适合在 Gazebo 空世界中单独测试。
+
+终端 1 启动 TurtleBot3 Burger 空世界：
+
+```bash
+source /opt/ros/humble/setup.bash
+export TURTLEBOT3_MODEL=burger
+ros2 launch turtlebot3_gazebo empty_world.launch.py
+```
+
+终端 2 加载本项目工作空间，并选择一个算法节点运行：
+
+```bash
+source /opt/ros/humble/setup.bash
+source ~/ros2maze_ws/install/setup.bash
+
+# 点到点控制
+ros2 run maze_control tb3_point2point
+
+# 航点序列跟踪
+ros2 run maze_control tb3_waypoints
+
+# Pure-Pursuit 航迹跟踪
+ros2 run maze_control tb3_pure_pursuit
+```
+
+优化左墙跟随节点可以在独立运行时通过 ROS 2 参数调整目标墙距、避障距离和速度：
+
+```bash
+ros2 run maze_control tb3_wall_follower_optimized --ros-args \
+  -p target_left:=0.45 \
+  -p front_danger:=0.45 \
+  -p max_linear:=0.22 \
+  -p max_angular:=0.70
+```
+
 ## 主要话题
 
 - `/scan`：`sensor_msgs/msg/LaserScan` 激光雷达数据
@@ -117,14 +195,42 @@ ros2 run rqt_graph rqt_graph
 ## 目录结构
 
 ```text
-src/maze_control/
-├── launch/          # ROS 2 Python launch 文件
-├── maze_control/    # Python 控制节点
-├── rviz/            # RViz2 配置
-├── worlds/          # Gazebo 迷宫地图
-├── package.xml
-├── setup.py
-└── setup.cfg
+ros2maze_ws/
+|-- README.md
+|-- LICENSE
+|-- src/
+|   `-- maze_control/
+|       |-- launch/
+|       |   `-- maze_tb3.launch.py
+|       |-- maze_control/
+|       |   |-- scan_region_node.py
+|       |   |-- tb3_avoid.py
+|       |   |-- tb3_point2point.py
+|       |   |-- tb3_pure_pursuit.py
+|       |   |-- tb3_wall_follower.py
+|       |   |-- tb3_wall_follower_optimized.py
+|       |   `-- tb3_waypoints.py
+|       |-- rviz/
+|       |   `-- maze_config.rviz
+|       |-- worlds/
+|       |   |-- maze_tb3.world
+|       |   |-- test_corridor.world
+|       |   |-- s_shape_maze.world
+|       |   |-- straight_maze.world
+|       |   |-- l_maze.world
+|       |   |-- l2_maze.world
+|       |   |-- shape7_maze.world
+|       |   |-- u_maze.world
+|       |   |-- z_maze.world
+|       |   `-- my_obstacle.world
+|       |-- resource/
+|       |-- test/
+|       |-- package.xml
+|       |-- setup.py
+|       `-- setup.cfg
+|-- build/      # 编译生成，不提交到 Git
+|-- install/    # 编译生成，不提交到 Git
+`-- log/        # 运行生成，不提交到 Git
 ```
 
 ## 说明
