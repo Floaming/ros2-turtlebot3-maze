@@ -29,6 +29,28 @@ ros2 pkg prefix turtlebot3_description
 ros2 pkg prefix turtlebot3_gazebo
 ```
 
+## 获取代码
+
+### 使用 Git 克隆
+
+在 Ubuntu 虚拟机中执行：
+
+```bash
+cd ~
+git clone https://github.com/Floaming/ros2-turtlebot3-maze.git ros2maze_ws
+cd ~/ros2maze_ws
+```
+
+上述命令会将项目克隆到 `~/ros2maze_ws`。仓库根目录就是 ROS 2 工作空间，其中的功能包位于 `src/maze_control`。
+
+### 下载 ZIP
+
+也可以在 GitHub 仓库页面点击 `Code`，选择 `Download ZIP`。下载后将压缩包解压到 Ubuntu，并将解压后的项目目录重命名为 `ros2maze_ws`，然后进入该目录：
+
+```bash
+cd ~/ros2maze_ws
+```
+
 ## 编译
 
 本仓库根目录就是 ROS 2 工作空间目录，克隆后直接在仓库根目录编译：
