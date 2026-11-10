@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+import math
+
 import rclpy
 from rclpy.node import Node
 from sensor_msgs.msg import LaserScan
@@ -29,19 +31,21 @@ class SimpleAvoidNode(Node):
 
     def scan_callback(self, msg: LaserScan):
         """雷达回调函数"""
-        total_points = len(msg.ranges)
-        # 360度雷达，正前方是中间位置；取正前方 ±15° 扇形区域判断障碍物
-        view_range = int(total_points / 12)
-        mid_idx = total_points // 2
-        start_idx = mid_idx - view_range
-        end_idx = mid_idx + view_range
-
-        # 提取这个扇区内合法距离，过滤inf、超出量程、非法值
+        # 根据 LaserScan 的实际角度参数提取正前方 ±15°。
+        # ranges 数组的中点不一定对应 0°，不能直接按数组中点取值。
         front_ranges = []
-        for i in range(start_idx, end_idx):
-            d = msg.ranges[i]
-            if msg.range_min < d < msg.range_max:
-                front_ranges.append(d)
+        front_half_angle = math.radians(15.0)
+        for index, distance in enumerate(msg.ranges):
+            if not math.isfinite(distance):
+                continue
+            if not msg.range_min < distance <= msg.range_max:
+                continue
+
+            angle = msg.angle_min + index * msg.angle_increment
+            # 统一到 [-pi, pi]，兼容 [0, 2pi] 和 [-pi, pi] 两种扫描范围。
+            angle = math.atan2(math.sin(angle), math.cos(angle))
+            if abs(angle) <= front_half_angle:
+                front_ranges.append(distance)
 
         if len(front_ranges) == 0:
             # 全部无穷远，前方空旷
@@ -58,7 +62,7 @@ class SimpleAvoidNode(Node):
         else:
             # 前方有障碍物：原地右转
             twist.linear.x = 0.0
-            twist.angular.z = self.turn_speed
+            twist.angular.z = -self.turn_speed
             self.get_logger().info(f"前方检测到障碍:{min_front_dist:.2f} m → 右转")
 
         self.cmd_pub.publish(twist)
